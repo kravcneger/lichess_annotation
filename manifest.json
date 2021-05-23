@@ -1,6 +1,6 @@
 {
-  "name": "lichess_annotation",
-  "description": "Chrome plugin that adds eval annotation for moves in Lichess. Works in accessibility mode for the blind players.",
+  "name": "lichess_accessibility",
+  "description": "Chrome plugin that adds eval annotation for moves in Lichess and remove bug with voicing identical moves. Works in accessibility mode for the blind players.",
   "version": "1.2",
   "manifest_version": 2,
   
