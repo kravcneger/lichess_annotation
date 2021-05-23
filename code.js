@@ -1,38 +1,63 @@
-document.addEventListener("DOMContentLoaded", function(event) { 
-    function f(){
-        var uri = window.location.pathname;
-        if( !!document.querySelector(".moves move")){
-            var request = new XMLHttpRequest();
-            var game_id = window.location.pathname.match(/[\/]([A-Za-z0-9_]{7,9})/)[0];
-            
-            request.open('GET', "/game/export" + game_id + "?literate=1", true);
-            request.onload = function() {
-            if (this.status >= 200 && this.status < 400) {
-                var found = this.response.match(/(?<=%eval )([-]?[\d]{1,3}[.][\d]{1,2}|[#][-]?[\d]{1,3})/g);
-                var moves = document.querySelectorAll(".moves move");
-                var len_moves = moves.length;
-                for(var i=0; i<len_moves;i++){
-                    if(found[i]){
-                        moves[i].append(" ("+ found[i]+ ") ");
-                    }
-                }
-            } else {
-                // We reached our target server, but it returned an error
-            
-            }
-            };
-            
-            request.onerror = function() {
-            // There was a connection error of some sort
-            };
-            request.send();
+ 
+var actualCode = '(' + function() {
+  var annotation_toogle = false;
 
+  function loadAnnotation(){
+    var data = lichess.analysis.data;
+    var treeParts =  data.treeParts;
+    for(var i=1; i<data.treeParts.length;i++ ){
+      if(treeParts[i]['eval']){
+        if( !annotation_toogle ){
+          if(treeParts[i]['eval']['cp'] != null){
+            treeParts[i]['san'] += "(" + ((treeParts[i]['eval']['cp'] / 100.0).toFixed(1)).toString() + ")";
+          }else if(treeParts[i]['eval']['mate'] != undefined) {
+            treeParts[i]['san'] += "(m " + treeParts[i]['eval']['mate'] + ")";
+          }
+        }else{
+          treeParts[i]['san'] = treeParts[i]['san'].replaceAll(/(\([m]?[ ]?[-]?[0-9]{1,3}\))/ig, "");
+          treeParts[i]['san'] = treeParts[i]['san'].replaceAll(/(\(.{1,8}\))/ig, "");
         }
+      }
     }
+    annotation_toogle = !annotation_toogle;
+  }
 
-    setTimeout(f, 4000);
-    
-});
+  document.addEventListener("keydown", function(e){
+    if (e.shiftKey && e.code == 'KeyA') {
+      if(typeof lichess !== "undefined" && typeof lichess.analysis !== "undefined" && typeof lichess.analysis.data !== "undefined" ){
+        loadAnnotation();
+      }
+    }
+  });
+
+  function loadDuplicateMovesPatch(){
+    var last_move_selector = document.querySelector('.lastMove');
+    var last_move = "";
+    var mutateObserver = new MutationObserver(function(records) {
+      if( last_move_selector.innerHTML.match(/[\.]/) ){
+        return;
+      }
+      if(
+        (last_move.trim().length > 1 && last_move_selector.innerHTML.trim().length > 1) &&
+        last_move.match(last_move_selector.innerHTML) || last_move_selector.innerHTML.match(last_move)){
+        last_move_selector.innerHTML = '.' + last_move_selector.innerHTML + ".";
+      }
+      last_move = last_move_selector.innerHTML;
+    });
+
+    mutateObserver.observe(last_move_selector, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+      characterDataOldValue: true
+    });
+  }
+  setTimeout(loadDuplicateMovesPatch, 5000);
+
+} + ')()';
 
 
-
+var script = document.createElement('script');
+script.textContent = actualCode;
+(document.head||document.documentElement).appendChild(script);
+script.remove();

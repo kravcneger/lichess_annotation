@@ -1,11 +1,12 @@
 {
   "name": "lichess_annotation",
   "description": "Chrome plugin that adds eval annotation for moves in Lichess. Works in accessibility mode for the blind players.",
-  "version": "1.0",
+  "version": "1.2",
   "manifest_version": 2,
   
   "content_scripts": [
-    {
+    {   
+        "all_frames": false,
         "matches": [
             "https://lichess.org/*",
             "https://lichess.dev/*"
@@ -13,6 +14,8 @@
         "js": [
             "./code.js"
         ],
-        "run_at": "document_start"
-    }]
+        "run_at": "document_end"
+    }],
+  "web_accessible_resources" : ["./code.js"],
+  "permissions": ["storage", "declarativeContent", "tabs", "activeTab", "scripting"]
 }
