@@ -10,8 +10,11 @@
     el.setAttribute("aria-live", "assertive");
     el.setAttribute("aria-atomic", "1");
     el.classList.add("evalposition");
-    var div = document.querySelector('.position');
-    insertAfter(div, el);
+    var position_sel = document.querySelector('.position');
+    if(typeof position_sel == "undefined"){
+      return;
+    }
+    insertAfter(position_sel, el);
   }, 3800);
 
   function loadAnnotation(){
