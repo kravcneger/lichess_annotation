@@ -11,7 +11,7 @@
     el.setAttribute("aria-atomic", "1");
     el.classList.add("evalposition");
     var position_sel = document.querySelector('.position');
-    if(typeof position_sel == "undefined"){
+    if(position_sel == null){
       return;
     }
     insertAfter(position_sel, el);
@@ -58,7 +58,7 @@
 
   function fixDuplicateMove(){
     var last_move_selector = document.querySelector('.lastMove');
-    if(typeof last_move_selector == "undefined"){
+    if(last_move_selector == null){
       return;
     }
 
