@@ -3,7 +3,7 @@ Chrome plugin that adds eval annotation for moves in Lichess. Works in "accessib
 #  shift+a - toggle annotation
 Example:
 ##### 0.5 - white has an advantage
-##### 0.7 - black has an advantage
+##### -0.7 - black has an advantage
 ##### m 2 - white mates in two moves
 ##### m -3 - идфсл mates in three moves
 
