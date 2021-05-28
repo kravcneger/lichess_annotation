@@ -25,7 +25,8 @@
     }
 
     var positionObserver = new MutationObserver(function(records) {
-      if(annotation_toogle){
+      var is_toogle = getCookie("annotation_toogle");
+      if(is_toogle != null){
         if(typeof lichess.analysis.node['eval'] != "undefined"){
           if(typeof lichess.analysis.node['eval']['cp'] != "undefined"){
             evalposition.innerHTML = ((lichess.analysis.node['eval']['cp'] / 100.0).toFixed(1)).toString();
@@ -51,39 +52,39 @@
   document.addEventListener("keydown", function(e){
     if (e.shiftKey && e.code == 'KeyA') {
       if(typeof lichess !== "undefined" && typeof lichess.analysis !== "undefined" && typeof lichess.analysis.data !== "undefined" ){
-        annotation_toogle = !annotation_toogle;
+        if( getCookie("annotation_toogle") != null){
+          eraseCookie("annotation_toogle");
+        }else{
+          setCookie("annotation_toogle", "1", 365)
+        }
       }
     }
   });
 
-  function fixDuplicateMove(){
-    var last_move_selector = document.querySelector('.lastMove');
-    if(last_move_selector == null){
-      return;
+  function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
     }
-
-    var last_move = "";
-    var mutateObserver = new MutationObserver(function(records) {
-      if( last_move_selector.innerHTML.match(/[\.]/) ){
-        return;
-      }
-      if(
-        (last_move.trim().length > 1 && last_move_selector.innerHTML.trim().length > 1) &&
-        last_move.match(last_move_selector.innerHTML) || last_move_selector.innerHTML.match(last_move)){
-        last_move_selector.innerHTML = '.' + last_move_selector.innerHTML + ".";
-      }
-      last_move = last_move_selector.innerHTML;
-    });
-
-    mutateObserver.observe(last_move_selector, {
-      childList: true,
-      characterData: true,
-      subtree: true,
-      characterDataOldValue: true
-    });
-
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
   }
-  setTimeout(fixDuplicateMove, 4000);
+
+  function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+  }
+
+  function eraseCookie(name) {   
+      document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
 
 } + ')()';
 
